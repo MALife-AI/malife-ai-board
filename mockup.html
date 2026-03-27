@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi-SQUARE AI Hub & AI Board 목업</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background: #f0f2f5; color: #333; }
+
+        /* ── Header ── */
+        .header {
+            background: #fff;
+            border-bottom: 2px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-logo .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -1px;
+        }
+        .header-logo .logo-text span { color: #e95b2e; }
+        .header-info {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* ── Top Tabs ── */
+        .top-tabs {
+            background: #fff;
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            padding: 0 20px;
+        }
+        .top-tabs .tab {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .top-tabs .tab:hover { color: #1a1a1a; background: #f8f8f8; }
+        .top-tabs .tab.active { color: #fff; background: #3b5998; border-bottom: 3px solid #2d4373; }
+        .top-tabs .tab.ai-hub {
+            color: #fff;
+            background: linear-gradient(135deg, #0066cc, #0099ff);
+            border-bottom: 3px solid #0055aa;
+            position: relative;
+        }
+        .top-tabs .tab.ai-hub .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ff4444;
+            color: #fff;
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 8px;
+        }
+
+        /* ── Layout ── */
+        .layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 220px;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            padding: 16px 0;
+            flex-shrink: 0;
+        }
+        .sidebar-section { margin-bottom: 8px; }
+        .sidebar-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0066cc;
+            padding: 8px 16px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sidebar-section-title.ai {
+            background: linear-gradient(90deg, #e8f4fd, #fff);
+            color: #0066cc;
+            border-left: 3px solid #0066cc;
+        }
+        .sidebar-item {
+            padding: 7px 16px 7px 28px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sidebar-item:hover { background: #f0f7ff; color: #0066cc; }
+        .sidebar-item.active { background: #e3f0ff; color: #0055aa; font-weight: 600; }
+        .sidebar-item .count {
+            margin-left: auto;
+            font-size: 11px;
+            background: #ff6b35;
+            color: #fff;
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+        .sidebar-divider {
+            height: 1px;
+            background: #eee;
+            margin: 10px 16px;
+        }
+        .sidebar-section-title.legacy {
+            color: #888;
+            font-size: 11px;
+        }
+        .sidebar-item.legacy { color: #999; font-size: 12px; }
+
+        /* ── Main Content ── */
+        .main { flex: 1; padding: 20px; }
+
+        /* ── Page Selector ── */
+        .page-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .page-btn {
+            padding: 8px 20px;
+            border: 2px solid #0066cc;
+            background: #fff;
+            color: #0066cc;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .page-btn:hover { background: #e8f4fd; }
+        .page-btn.active { background: #0066cc; color: #fff; }
+
+        /* ── AI Hub Dashboard ── */
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+
+        .banner {
+            background: linear-gradient(135deg, #0066cc 0%, #00aaff 50%, #0055aa 100%);
+            border-radius: 12px;
+            padding: 28px 32px;
+            color: #fff;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner::after {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: -30px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+        .banner-label {
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .banner h2 { font-size: 22px; margin-bottom: 6px; }
+        .banner p { font-size: 14px; opacity: 0.9; }
+        .banner .champion-name { font-size: 18px; font-weight: 700; margin-top: 8px; }
+
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .card-icon { font-size: 28px; margin-bottom: 10px; }
+        .card h3 { font-size: 15px; margin-bottom: 6px; color: #1a1a1a; }
+        .card p { font-size: 13px; color: #666; line-height: 1.5; }
+        .card .card-tag {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #e8f4fd;
+            color: #0066cc;
+        }
+
+        /* ── Stats Row ── */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-box {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .stat-box .stat-num { font-size: 28px; font-weight: 800; color: #0066cc; }
+        .stat-box .stat-label { font-size: 12px; color: #888; margin-top: 4px; }
+
+        /* ── Champion Section ── */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .more {
+            margin-left: auto;
+            font-size: 12px;
+            color: #0066cc;
+            cursor: pointer;
+        }
+
+        .champion-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .champion-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .champion-card .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0066cc, #00aaff);
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .champion-card .name { font-size: 14px; font-weight: 600; }
+        .champion-card .dept { font-size: 12px; color: #888; }
+        .champion-card .badge-champion {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #fff3e0;
+            color: #e65100;
+            font-weight: 600;
+        }
+
+        /* ── Education Roadmap ── */
+        .roadmap {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .roadmap-step {
+            flex: 1;
+            min-width: 160px;
+            background: #fff;
+            padding: 16px;
+            position: relative;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .roadmap-step:first-child { border-radius: 10px 0 0 10px; }
+        .roadmap-step:last-child { border-radius: 0 10px 10px 0; }
+        .roadmap-step::after {
+            content: '▶';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #0066cc;
+            font-size: 14px;
+            z-index: 1;
+        }
+        .roadmap-step:last-child::after { display: none; }
+        .roadmap-step .step-num {
+            font-size: 11px;
+            color: #0066cc;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .roadmap-step .step-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .roadmap-step .step-desc { font-size: 11px; color: #888; }
+        .roadmap-step.current { border-top: 3px solid #0066cc; }
+
+        /* ── Board Table ── */
+        .board-section { display: none; }
+        .board-section.active { display: block; }
+
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .board-header h2 { font-size: 18px; }
+        .write-btn {
+            padding: 8px 20px;
+            background: #0066cc;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .write-btn:hover { background: #0055aa; }
+
+        .board-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-tag {
+            padding: 5px 14px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+        }
+        .filter-tag.active { background: #0066cc; color: #fff; }
+
+        .board-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .board-table table { width: 100%; border-collapse: collapse; }
+        .board-table th {
+            background: #f8f9fa;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #888;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .board-table td {
+            padding: 12px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .board-table tr:hover { background: #f8fbff; }
+        .board-table .title-cell { max-width: 400px; }
+        .board-table .title-cell a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .board-table .title-cell a:hover { color: #0066cc; }
+        .badge-new {
+            display: inline-block;
+            font-size: 9px;
+            background: #ff4444;
+            color: #fff;
+            padding: 1px 5px;
+            border-radius: 8px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        .badge-hot {
+            display: inline-block;
+            font-size: 9px;
+            background: #ff6b35;
+            color: #fff;
+            padding: 1px 5px;
+            border-radius: 8px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        .badge-champ {
+            display: inline-block;
+            font-size: 9px;
+            background: #fff3e0;
+            color: #e65100;
+            padding: 1px 6px;
+            border-radius: 8px;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+        .author-champ { color: #0066cc; font-weight: 600; }
+        .likes { color: #e65100; font-weight: 600; }
+
+        /* ── Education Page ── */
+        .edu-section { display: none; }
+        .edu-section.active { display: block; }
+
+        .edu-courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .course-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .course-card:hover { transform: translateY(-2px); }
+        .course-thumb {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+        .course-thumb.beginner { background: linear-gradient(135deg, #4caf50, #66bb6a); }
+        .course-thumb.intermediate { background: linear-gradient(135deg, #ff9800, #ffb74d); }
+        .course-thumb.advanced { background: linear-gradient(135deg, #e53935, #ef5350); }
+        .course-thumb.champion { background: linear-gradient(135deg, #0066cc, #00aaff); }
+        .course-body { padding: 16px; }
+        .course-body .level {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        .level.beginner { background: #e8f5e9; color: #2e7d32; }
+        .level.intermediate { background: #fff3e0; color: #e65100; }
+        .level.advanced { background: #ffebee; color: #c62828; }
+        .level.champion { background: #e3f2fd; color: #0066cc; }
+        .course-body h4 { font-size: 14px; margin-bottom: 4px; }
+        .course-body .course-desc { font-size: 12px; color: #888; margin-bottom: 8px; }
+        .course-body .course-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #aaa;
+        }
+        .progress-bar {
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* ── Tool Guide ── */
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+        .tool-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .tool-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .tool-info h4 { font-size: 14px; margin-bottom: 3px; }
+        .tool-info p { font-size: 12px; color: #888; line-height: 1.4; }
+        .tool-status {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+        .tool-status.approved { background: #e8f5e9; color: #2e7d32; }
+        .tool-status.pilot { background: #fff3e0; color: #e65100; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 11px;
+            color: #aaa;
+            background: #fff;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .layout { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-logo">
+        <div class="logo-text">Mi-<span>SQUARE</span></div>
+        <span style="font-size:12px; color:#888;">미래에셋생명 사내 포털</span>
+    </div>
+    <div class="header-info">홍길동 님 | AI 혁신팀 | 2026.03.27</div>
+</div>
+
+<!-- Top Tabs -->
+<div class="top-tabs">
+    <div class="tab" onclick="showPage('mail')">메일</div>
+    <div class="tab active" onclick="showPage('board')">게시</div>
+    <div class="tab" onclick="showPage('work')">업무</div>
+    <div class="tab" onclick="showPage('survey')">설문</div>
+    <div class="tab" onclick="showPage('suggest')">제안</div>
+    <div class="tab ai-hub" onclick="showPage('aihub')">
+        AI Hub
+        <span class="badge">NEW</span>
+    </div>
+</div>
+
+<div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title ai">📌 AI 게시판</div>
+            <div class="sidebar-item active" onclick="switchBoard('success')">
+                🏆 AI 성공사례
+                <span class="count">12</span>
+            </div>
+            <div class="sidebar-item" onclick="switchBoard('tips')">
+                💡 AI 꿀팁 공유
+                <span class="count">28</span>
+            </div>
+            <div class="sidebar-item" onclick="switchBoard('qna')">
+                ❓ AI Q&A
+                <span class="count">7</span>
+            </div>
+            <div class="sidebar-item" onclick="switchBoard('ideas')">
+                💬 AX 아이디어 제안
+                <span class="count">5</span>
+            </div>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title legacy">📁 기존 게시판</div>
+            <div class="sidebar-item legacy">전사/미래에셋생명</div>
+            <div class="sidebar-item legacy">마케팅활동지침</div>
+            <div class="sidebar-item legacy">S/영업관련</div>
+            <div class="sidebar-item legacy">보도자료</div>
+            <div class="sidebar-item legacy">전사/직종정보</div>
+            <div class="sidebar-item legacy">CCM(소비자중심경영)</div>
+            <div class="sidebar-item legacy">메뉴얼 총정리</div>
+            <div class="sidebar-item legacy">Daily News</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+        <!-- ===== AI Hub Dashboard ===== -->
+        <div class="dashboard" id="page-aihub">
+            <!-- Sub Navigation -->
+            <div class="page-selector">
+                <div class="page-btn active" onclick="switchHub('dashboard')">대시보드</div>
+                <div class="page-btn" onclick="switchHub('champion-edu')">AI Champion 교육</div>
+                <div class="page-btn" onclick="switchHub('learning')">AI 학습관</div>
+                <div class="page-btn" onclick="switchHub('tools')">AI 도구 가이드</div>
+                <div class="page-btn" onclick="switchHub('newsletter')">AI 뉴스레터</div>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="hub-dashboard" class="hub-sub active">
+                <!-- Banner -->
+                <div class="banner">
+                    <div class="banner-label">🏅 이달의 AI Champion</div>
+                    <h2>ChatGPT로 보험심사 업무 처리시간 40% 단축</h2>
+                    <p>보험심사팀에서 AI를 활용해 심사 프로세스를 혁신한 사례</p>
+                    <div class="champion-name">김민수 차장 · 보험심사팀 · AI Champion 1기</div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-num">24</div>
+                        <div class="stat-label">AI Champion 수료자</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num">156</div>
+                        <div class="stat-label">성공사례 게시글</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num">82%</div>
+                        <div class="stat-label">교육 참여율</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num">18</div>
+                        <div class="stat-label">참여 부서</div>
+                    </div>
+                </div>
+
+                <!-- Hot Posts from AI Board -->
+                <div class="section-title">🔥 AI Board 인기글 <span class="more">더보기 →</span></div>
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h3>엑셀 매크로 대신 Claude로 월간 보고서 자동 생성</h3>
+                        <p>매달 3시간 걸리던 보고서 작업을 15분으로 단축한 방법을 공유합니다.</p>
+                        <div class="card-tag">👍 47 · 💬 12 · 경영지원팀</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🤖</div>
+                        <h3>고객 문의 자동 분류 시스템 구축기</h3>
+                        <p>AI로 고객 문의를 자동 분류하여 응답 시간을 60% 개선했습니다.</p>
+                        <div class="card-tag">👍 38 · 💬 9 · 고객서비스팀</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💡</div>
+                        <h3>[꿀팁] ChatGPT 프롬프트 작성법 5가지</h3>
+                        <p>업무에서 바로 쓸 수 있는 효과적인 프롬프트 패턴을 정리했습니다.</p>
+                        <div class="card-tag">👍 63 · 💬 21 · AI Champion 2기</div>
+                    </div>
+                </div>
+
+                <!-- Champion Status -->
+                <div class="section-title">🏆 AI Champion 현황 <span class="more">전체보기 →</span></div>
+                <div class="champion-list">
+                    <div class="champion-card">
+                        <div class="avatar">김</div>
+                        <div class="name">김민수</div>
+                        <div class="dept">보험심사팀</div>
+                        <div class="badge-champion">Champion 1기</div>
+                    </div>
+                    <div class="champion-card">
+                        <div class="avatar">이</div>
+                        <div class="name">이서연</div>
+                        <div class="dept">마케팅팀</div>
+                        <div class="badge-champion">Champion 1기</div>
+                    </div>
+                    <div class="champion-card">
+                        <div class="avatar">박</div>
+                        <div class="name">박준호</div>
+                        <div class="dept">IT개발팀</div>
+                        <div class="badge-champion">Champion 1기</div>
+                    </div>
+                    <div class="champion-card">
+                        <div class="avatar">최</div>
+                        <div class="name">최은지</div>
+                        <div class="dept">경영지원팀</div>
+                        <div class="badge-champion">Champion 2기</div>
+                    </div>
+                    <div class="champion-card">
+                        <div class="avatar">정</div>
+                        <div class="name">정태현</div>
+                        <div class="dept">고객서비스팀</div>
+                        <div class="badge-champion">Champion 2기</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Champion Education -->
+            <div id="hub-champion-edu" class="hub-sub">
+                <div class="banner" style="background: linear-gradient(135deg, #1a237e, #3f51b5);">
+                    <div class="banner-label">📢 모집 중</div>
+                    <h2>AI Champion 3기 모집 안내</h2>
+                    <p>각 부서의 AI 선도자를 모집합니다. 교육 기간: 2026.04.14 ~ 2026.05.23 (6주)</p>
+                    <div class="champion-name" style="opacity:0.9;">신청 마감: 2026.04.07 (월) · 부서별 1~2명</div>
+                </div>
+
+                <div class="section-title">📋 AI Champion 교육 로드맵</div>
+                <div class="roadmap">
+                    <div class="roadmap-step current">
+                        <div class="step-num">STEP 1</div>
+                        <div class="step-title">기초 교육</div>
+                        <div class="step-desc">AI 기본 개념, 사내 도구 사용법, 보안 가이드라인</div>
+                    </div>
+                    <div class="roadmap-step">
+                        <div class="step-num">STEP 2</div>
+                        <div class="step-title">실전 과제</div>
+                        <div class="step-desc">본인 업무에 AI 적용, 실제 성과 도출</div>
+                    </div>
+                    <div class="roadmap-step">
+                        <div class="step-num">STEP 3</div>
+                        <div class="step-title">지식 공유</div>
+                        <div class="step-desc">AI Board에 사례/꿀팁 게시, 동료 교육</div>
+                    </div>
+                    <div class="roadmap-step">
+                        <div class="step-num">STEP 4</div>
+                        <div class="step-title">Champion 인증</div>
+                        <div class="step-desc">과정 완료, Champion 배지 부여, AI Hub 등재</div>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top:24px;">📊 기수별 현황</div>
+                <div class="board-table">
+                    <table>
+                        <tr><th>기수</th><th>교육 기간</th><th>수료 인원</th><th>성공사례</th><th>상태</th></tr>
+                        <tr>
+                            <td><strong>1기</strong></td>
+                            <td>2025.09 ~ 2025.10</td>
+                            <td>12명 (8개 부서)</td>
+                            <td>45건</td>
+                            <td><span style="color:#2e7d32; font-weight:600;">수료 완료</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2기</strong></td>
+                            <td>2026.01 ~ 2026.02</td>
+                            <td>12명 (10개 부서)</td>
+                            <td>32건</td>
+                            <td><span style="color:#2e7d32; font-weight:600;">수료 완료</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3기</strong></td>
+                            <td>2026.04 ~ 2026.05</td>
+                            <td>모집 중</td>
+                            <td>-</td>
+                            <td><span style="color:#e65100; font-weight:600;">모집 중</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Learning -->
+            <div id="hub-learning" class="hub-sub">
+                <div class="section-title">📚 교육 과정</div>
+                <div class="edu-courses">
+                    <div class="course-card">
+                        <div class="course-thumb beginner">🌱</div>
+                        <div class="course-body">
+                            <span class="level beginner">입문</span>
+                            <h4>AI 첫걸음 — 생성형 AI란 무엇인가?</h4>
+                            <div class="course-desc">ChatGPT, Claude 등 생성형 AI의 기본 개념과 동작 원리를 학습합니다.</div>
+                            <div class="course-meta"><span>VOD 6강</span><span>수강자 324명</span></div>
+                            <div class="progress-bar"><div class="fill" style="width:100%; background:#4caf50;"></div></div>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-thumb beginner">💬</div>
+                        <div class="course-body">
+                            <span class="level beginner">입문</span>
+                            <h4>프롬프트 엔지니어링 기초</h4>
+                            <div class="course-desc">효과적인 프롬프트 작성법과 업무 활용 패턴을 배웁니다.</div>
+                            <div class="course-meta"><span>VOD 8강</span><span>수강자 287명</span></div>
+                            <div class="progress-bar"><div class="fill" style="width:75%; background:#4caf50;"></div></div>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-thumb intermediate">📊</div>
+                        <div class="course-body">
+                            <span class="level intermediate">중급</span>
+                            <h4>AI로 업무 자동화하기</h4>
+                            <div class="course-desc">반복 업무를 AI 도구로 자동화하는 실전 방법을 학습합니다.</div>
+                            <div class="course-meta"><span>VOD 10강</span><span>수강자 156명</span></div>
+                            <div class="progress-bar"><div class="fill" style="width:45%; background:#ff9800;"></div></div>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-thumb champion">🏆</div>
+                        <div class="course-body">
+                            <span class="level champion">Champion 전용</span>
+                            <h4>AI Champion 심화 과정</h4>
+                            <div class="course-desc">Champion 수료자 대상 고급 활용법, 부서 전파 전략을 학습합니다.</div>
+                            <div class="course-meta"><span>오프라인 4회</span><span>수강자 24명</span></div>
+                            <div class="progress-bar"><div class="fill" style="width:60%; background:#0066cc;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Tools Guide -->
+            <div id="hub-tools" class="hub-sub">
+                <div class="section-title">🛠️ 사내 승인 AI 도구</div>
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon" style="background:#e8f5e9;">🤖</div>
+                        <div class="tool-info">
+                            <h4>ChatGPT Enterprise</h4>
+                            <p>범용 텍스트 생성, 요약, 번역, 코드 작성 등 다양한 업무에 활용</p>
+                            <span class="tool-status approved">✅ 승인됨</span>
+                        </div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon" style="background:#e3f2fd;">💬</div>
+                        <div class="tool-info">
+                            <h4>Claude for Business</h4>
+                            <p>문서 분석, 보고서 작성, 장문 처리에 특화된 AI 어시스턴트</p>
+                            <span class="tool-status approved">✅ 승인됨</span>
+                        </div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon" style="background:#fce4ec;">🎨</div>
+                        <div class="tool-info">
+                            <h4>Midjourney</h4>
+                            <p>마케팅 소재, 프레젠테이션용 이미지 생성</p>
+                            <span class="tool-status pilot">🔶 파일럿</span>
+                        </div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon" style="background:#fff3e0;">📋</div>
+                        <div class="tool-info">
+                            <h4>Notion AI</h4>
+                            <p>회의록 자동 정리, 문서 협업, 프로젝트 관리</p>
+                            <span class="tool-status approved">✅ 승인됨</span>
+                        </div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon" style="background:#f3e5f5;">📊</div>
+                        <div class="tool-info">
+                            <h4>Microsoft Copilot</h4>
+                            <p>Excel, PowerPoint, Word 등 Office 업무 AI 지원</p>
+                            <span class="tool-status approved">✅ 승인됨</span>
+                        </div>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon" style="background:#e0f2f1;">🔍</div>
+                        <div class="tool-info">
+                            <h4>사내 AI 검색 (개발 중)</h4>
+                            <p>사내 문서/규정 대상 RAG 기반 AI 검색 시스템</p>
+                            <span class="tool-status pilot">🔶 개발 중</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newsletter -->
+            <div id="hub-newsletter" class="hub-sub">
+                <div class="section-title">📰 AI 뉴스레터</div>
+                <div class="board-table">
+                    <table>
+                        <tr><th style="width:80px;">날짜</th><th>제목</th><th style="width:60px;">조회</th></tr>
+                        <tr><td>03.27</td><td class="title-cell"><a href="#">[AI 혁신팀] AI Champion 3기 모집 안내</a> <span class="badge-new">N</span></td><td>234</td></tr>
+                        <tr><td>03.24</td><td class="title-cell"><a href="#">[트렌드] Claude 4.6 출시 — 달라진 점과 업무 활용법</a> <span class="badge-new">N</span></td><td>189</td></tr>
+                        <tr><td>03.20</td><td class="title-cell"><a href="#">[정책] AI 활용 시 개인정보 보호 가이드라인 업데이트</a></td><td>312</td></tr>
+                        <tr><td>03.17</td><td class="title-cell"><a href="#">[AI 혁신팀] 2분기 AX 추진 계획 공유</a></td><td>278</td></tr>
+                        <tr><td>03.10</td><td class="title-cell"><a href="#">[트렌드] 금융업 AI 활용 사례 — 해외 보험사 동향</a></td><td>198</td></tr>
+                        <tr><td>03.03</td><td class="title-cell"><a href="#">[AI 혁신팀] AI Champion 2기 수료식 및 우수사례 발표</a></td><td>345</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== AI Board - Success Stories ===== -->
+        <div class="board-section active" id="page-board">
+            <div class="board-header">
+                <h2>🏆 AI 성공사례</h2>
+                <button class="write-btn">✏️ 사례 작성하기</button>
+            </div>
+            <div class="board-filters">
+                <div class="filter-tag active">전체</div>
+                <div class="filter-tag">보험심사</div>
+                <div class="filter-tag">마케팅</div>
+                <div class="filter-tag">고객서비스</div>
+                <div class="filter-tag">경영지원</div>
+                <div class="filter-tag">IT개발</div>
+                <div class="filter-tag">ChatGPT</div>
+                <div class="filter-tag">Claude</div>
+                <div class="filter-tag">Copilot</div>
+            </div>
+            <div class="board-table">
+                <table>
+                    <tr><th style="width:50px;">번호</th><th>제목</th><th style="width:100px;">작성자</th><th style="width:70px;">날짜</th><th style="width:50px;">👍</th><th style="width:50px;">조회</th></tr>
+                    <tr>
+                        <td>12</td>
+                        <td class="title-cell"><a href="#">ChatGPT로 보험심사 업무 처리시간 40% 단축한 방법</a> <span class="badge-hot">HOT</span></td>
+                        <td><span class="author-champ">김민수</span> <span class="badge-champ">Champion</span></td>
+                        <td>03.25</td>
+                        <td class="likes">47</td>
+                        <td>521</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td class="title-cell"><a href="#">고객 문의 자동 분류 시스템 — Claude API 활용기</a> <span class="badge-hot">HOT</span></td>
+                        <td><span class="author-champ">정태현</span> <span class="badge-champ">Champion</span></td>
+                        <td>03.23</td>
+                        <td class="likes">38</td>
+                        <td>412</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td class="title-cell"><a href="#">Copilot으로 월간 영업보고서 자동화한 후기</a> <span class="badge-new">N</span></td>
+                        <td><span class="author-champ">최은지</span> <span class="badge-champ">Champion</span></td>
+                        <td>03.22</td>
+                        <td class="likes">31</td>
+                        <td>289</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td class="title-cell"><a href="#">마케팅 카피라이팅에 AI를 활용해본 경험 공유</a></td>
+                        <td><span class="author-champ">이서연</span> <span class="badge-champ">Champion</span></td>
+                        <td>03.20</td>
+                        <td class="likes">25</td>
+                        <td>234</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td class="title-cell"><a href="#">회의록 자동 작성 — Notion AI 활용 사례</a></td>
+                        <td>한지우</td>
+                        <td>03.18</td>
+                        <td class="likes">19</td>
+                        <td>198</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td class="title-cell"><a href="#">신입사원이 ChatGPT로 업무 온보딩 시간을 줄인 이야기</a></td>
+                        <td>윤하늘</td>
+                        <td>03.15</td>
+                        <td class="likes">22</td>
+                        <td>267</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td class="title-cell"><a href="#">[실패사례] AI 번역 도구 도입 시 주의할 점</a></td>
+                        <td><span class="author-champ">박준호</span> <span class="badge-champ">Champion</span></td>
+                        <td>03.12</td>
+                        <td class="likes">34</td>
+                        <td>356</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    Mi-SQUARE AI Hub & AI Board — 미래에셋생명 AI 혁신팀 운영 · 목업 페이지 (2026.03.27)
+</div>
+
+<script>
+    // Page switching (top tabs)
+    function showPage(page) {
+        document.querySelectorAll('.top-tabs .tab').forEach(t => t.classList.remove('active'));
+        if (page === 'aihub') {
+            document.querySelector('.tab.ai-hub').classList.add('active');
+            document.getElementById('page-aihub').style.display = 'block';
+            document.getElementById('page-board').style.display = 'none';
+        } else {
+            document.querySelectorAll('.top-tabs .tab')[1].classList.add('active');
+            document.getElementById('page-aihub').style.display = 'none';
+            document.getElementById('page-board').style.display = 'block';
+        }
+    }
+
+    // AI Hub sub-navigation
+    function switchHub(sub) {
+        document.querySelectorAll('.hub-sub').forEach(s => s.style.display = 'none');
+        document.getElementById('hub-' + sub).style.display = 'block';
+        document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // Sidebar board switching
+    function switchBoard(board) {
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        event.target.classList.add('active');
+        // In a real app, this would load different board content
+        showPage('board');
+    }
+
+    // Initialize - hide hub sub-pages except dashboard
+    document.querySelectorAll('.hub-sub').forEach(s => s.style.display = 'none');
+    document.getElementById('hub-dashboard').style.display = 'block';
+</script>
+
+</body>
+</html>
