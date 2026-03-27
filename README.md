@@ -6,7 +6,7 @@
 ## 현재 전사게시판 현황
 
 <p align="center">
-  <img src="board.png" alt="현재 Mi-SQUARE 전사게시판" width="700"/>
+  <img src="board_masked.png" alt="현재 Mi-SQUARE 전사게시판" width="700"/>
 </p>
 
 ---

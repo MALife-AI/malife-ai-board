@@ -2,7 +2,7 @@
 
 ## 현재 전사게시판 현황
 
-![현재 Mi-SQUARE 전사게시판](board.png)
+![현재 Mi-SQUARE 전사게시판](board_masked.png)
 
 ---
 
