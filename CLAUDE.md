@@ -57,6 +57,34 @@ malife_ai_board/
 
 수정 시 두 사본이 어긋나지 않도록 한쪽을 업데이트한 뒤 `cp -R` 으로 동기화한다.
 
+### 자동 실행 체이닝
+
+매주 일요일 18:50 KST 에 다음 순서로 자동 실행된다 (수동 개입 없음):
+
+```
+일요일 18:50 KST
+  └─ launchd: ~/Library/LaunchAgents/com.lifesailor.market-summary.plist
+      └─ /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/scripts/auto_market.py
+          ├─ [1/4] /market-full {date}        ← W## HTML 파일 생성
+          ├─ [2/4] (생략된 단계 — Telegram 알림은 Claude 측에서 처리)
+          ├─ [3/4] Snowflake drift 검증
+          └─ [4/4] AI Board 카드뉴스 생성     ← 일요일에만 실행
+              └─ scripts/run_weekly_cardnews.sh chained
+                  └─ claude -p "..." (자동 카드뉴스 + 게시글 + git push)
+```
+
+**체이닝 포인트**: `auto_market.py main()` 의 `[4/4]` 블록이 평일 weekday()==6(일) 일 때만 `scripts/run_weekly_cardnews.sh`를 호출한다.
+
+**실패 격리**: cardnews wrapper는 `subprocess` 로 호출되며 `[WARN]` 로그만 남기고 auto_market 본체에는 영향을 주지 않는다.
+
+**중복 방지**: wrapper 내부에 주차별 done 마커 + mkdir 락이 있어, 같은 주가 여러 번 실행되어도 한 번만 발행된다.
+
+**수동 실행**:
+```bash
+cd /Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board
+./scripts/run_weekly_cardnews.sh manual
+```
+
 ---
 
 ## 디자인 가이드

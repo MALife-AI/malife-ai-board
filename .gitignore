@@ -1,1 +1,5 @@
 board.png
+
+# 자동화 wrapper 의 임시 상태 (락·done 마커)
+scripts/state/
+scripts/logs/
