@@ -100,7 +100,7 @@ set +e
 claude \
   --print \
   --permission-mode bypassPermissions \
-  --model claude-sonnet-4-6 \
+  --model sonnet \
   "$PROMPT" >> "$LOG" 2>&1
 EXIT=$?
 set -e
