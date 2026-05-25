@@ -18,8 +18,8 @@
 # ────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-export PATH="/Users/lifesailor/.nvm/versions/node/v24.14.0/bin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:/usr/sbin:/sbin"
-export HOME="/Users/lifesailor"
+export PATH="/Users/kosmos/.nvm/versions/node/v20.20.2/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export HOME="/Users/kosmos"
 export LANG="ko_KR.UTF-8"
 
 # ── 주차 계산: 어제 기준 ISO 주차 ─────────────────────────────────
@@ -29,8 +29,8 @@ WEEK=$(date -v-1d +%V)
 YEAR=$(date -v-1d +%G)
 WTAG="${YEAR}-W${WEEK}"
 
-REPO="/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board"
-SUMMARY_DIR="/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/weekly"
+REPO="/Users/kosmos/project/malife-ai-board"
+SUMMARY_DIR="/Users/kosmos/project/market-summary/output/summary/weekly"
 PM_HTML="${SUMMARY_DIR}/${WTAG}_pm.html"
 STORY_HTML="${SUMMARY_DIR}/${WTAG}_story.html"
 

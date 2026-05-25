@@ -42,7 +42,7 @@ malife_ai_board/
 
 ### Weekly Market Story (매주 월요일 발행)
 
-**입력**: `/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/weekly/YYYY-W##_pm.html` + `..._story.html`
+**입력**: `/Users/kosmos/project/market-summary/output/summary/weekly/YYYY-W##_pm.html` + `..._story.html`
 
 **출력**:
 - `writings/YYYY-W##-card-news/weekly_story/` (10장 PNG, 1080×1350)
@@ -63,8 +63,8 @@ malife_ai_board/
 
 ```
 일요일 18:50 KST
-  └─ launchd: ~/Library/LaunchAgents/com.lifesailor.market-summary.plist
-      └─ /Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/scripts/auto_market.py
+  └─ launchd: ~/Library/LaunchAgents/com.kosmos.market-summary.plist
+      └─ /Users/kosmos/project/market-summary/scripts/auto_market.py
           ├─ [1/4] /market-full {date}        ← W## HTML 파일 생성
           ├─ [2/4] (생략된 단계 — Telegram 알림은 Claude 측에서 처리)
           ├─ [3/4] Snowflake drift 검증
@@ -81,7 +81,7 @@ malife_ai_board/
 
 **수동 실행**:
 ```bash
-cd /Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board
+cd /Users/kosmos/project/malife-ai-board
 ./scripts/run_weekly_cardnews.sh manual
 ```
 
@@ -118,7 +118,7 @@ cd /Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_bo
 
 ```bash
 # 카드뉴스 생성 (이번 주차 W## 변수 치환)
-cd "/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board/writings/YYYY-W##-card-news"
+cd "/Users/kosmos/project/malife-ai-board/writings/YYYY-W##-card-news"
 python3 _html/_template.py
 ```
 

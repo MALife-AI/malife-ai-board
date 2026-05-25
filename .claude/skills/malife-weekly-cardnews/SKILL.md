@@ -26,7 +26,7 @@ metadata:
 ### 입력 (Source Data)
 
 ```
-/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/weekly/
+/Users/kosmos/project/market-summary/output/summary/weekly/
 ├── 2026-W##.html         ← 메인 (CSS 스타일 참조용)
 ├── 2026-W##_pm.html      ← PM Story 탭 본체 (필수)
 └── 2026-W##_story.html   ← Weekly Story 탭 본체 (필수)
@@ -38,7 +38,7 @@ metadata:
 ### 출력 (AI Board)
 
 ```
-/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board/writings/
+/Users/kosmos/project/malife-ai-board/writings/
 ├── 2026-W##_AI_Board_*.md          ← 게시글 본문 (markdown)
 └── 2026-W##-card-news/
     ├── weekly_story/                ← 10장 PNG (1080×1350)
@@ -128,7 +128,7 @@ metadata:
 
 ```bash
 # 주차 번호 확인 (예: W18 → 2026-W18)
-SRC=/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/weekly
+SRC=/Users/kosmos/project/market-summary/output/summary/weekly
 ls "$SRC" | grep "2026-W18"
 ```
 
@@ -137,7 +137,7 @@ ls "$SRC" | grep "2026-W18"
 ### 2단계: 작업 폴더 생성
 
 ```bash
-TARGET=/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board/writings
+TARGET=/Users/kosmos/project/malife-ai-board/writings
 mkdir -p "$TARGET/2026-W##-card-news"/{weekly_story,pm_story,_html/weekly,_html/pm}
 ```
 
@@ -278,8 +278,8 @@ python3 _html/_template.py
 ```bash
 # 한 번에 W## 카드뉴스 + 게시글까지 (수동 워크플로우)
 WEEK=W18
-SRC=/Users/lifesailor/Desktop/kosmos/ai/investment/market_summary/output/summary/weekly
-TARGET=/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board/writings/2026-${WEEK}-card-news
+SRC=/Users/kosmos/project/market-summary/output/summary/weekly
+TARGET=/Users/kosmos/project/malife-ai-board/writings/2026-${WEEK}-card-news
 
 # 1) 폴더 + 자산 복사
 mkdir -p $TARGET/{weekly_story,pm_story,_html/weekly,_html/pm}
@@ -302,5 +302,5 @@ open $TARGET/pm_story/01_cover.png
 - `assets/cardnews.css` — 1080×1350 카드뉴스 CSS 토큰·컴포넌트
 - `assets/render_cards.py` — Chrome headless 렌더 헬퍼
 - `references/W17_template_example.py` — W17 완성본 (구조 레퍼런스 — 수정 금지)
-- 첫 게시글 예시: `/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board/writings/2026-W17_AI_Board_첫게시글.md`
-- 프로젝트 컨벤션: `/Users/lifesailor/Desktop/kosmos/미래에셋생명/project/main/malife_ai_board/CLAUDE.md`
+- 첫 게시글 예시: `/Users/kosmos/project/malife-ai-board/writings/2026-W17_AI_Board_첫게시글.md`
+- 프로젝트 컨벤션: `/Users/kosmos/project/malife-ai-board/CLAUDE.md`
